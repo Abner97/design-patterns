@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Curso de Patrones de Diseño en TypeScript - Aprende 9 patrones fundamentales con ejemplos prácticos">
+    <title>Patrones de Diseño en TypeScript</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1>🎓 Patrones de Diseño en TypeScript</h1>
+            <p class="subtitle">Aprende 9 patrones fundamentales con ejemplos prácticos</p>
+            <div class="header-buttons">
+                <a href="https://github.com/tu-usuario/design-patterns" class="btn btn-primary" target="_blank">
+                    📦 Ver en GitHub
+                </a>
+                <a href="#setup" class="btn btn-secondary">
+                    🚀 Comenzar
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container">
+            <ul class="nav-list">
+                <li><a href="#about">Acerca del Curso</a></li>
+                <li><a href="#setup">Configuración</a></li>
+                <li><a href="#patterns">Patrones</a></li>
+                <li><a href="#exercises">Ejercicios</a></li>
+                <li><a href="#resources">Recursos</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- About Section -->
+    <section id="about" class="section">
+        <div class="container">
+            <h2>📚 Acerca del Curso</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-icon">⏱️</div>
+                    <h3>8 Horas</h3>
+                    <p>Curso intensivo con teoría y práctica</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🎯</div>
+                    <h3>9 Patrones</h3>
+                    <p>Los patrones más utilizados en la industria</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">💻</div>
+                    <h3>TypeScript</h3>
+                    <p>Código moderno con tipado estático</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🏗️</div>
+                    <h3>SOLID</h3>
+                    <p>Principios de diseño aplicados</p>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h3>🎓 Estructura del Curso</h3>
+                <div class="modules">
+                    <div class="module">
+                        <h4>Módulo 1: Patrones Creacionales (2.5h)</h4>
+                        <ul>
+                            <li>Singleton</li>
+                            <li>Factory Method</li>
+                            <li>Builder</li>
+                        </ul>
+                    </div>
+                    <div class="module">
+                        <h4>Módulo 2: Patrones Estructurales (2.5h)</h4>
+                        <ul>
+                            <li>Adapter</li>
+                            <li>Decorator</li>
+                            <li>Facade</li>
+                        </ul>
+                    </div>
+                    <div class="module">
+                        <h4>Módulo 3: Patrones de Comportamiento (3h)</h4>
+                        <ul>
+                            <li>Strategy</li>
+                            <li>Observer</li>
+                            <li>Command</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Setup Section -->
+    <section id="setup" class="section section-alt">
+        <div class="container">
+            <h2>🛠️ Configuración del Ambiente</h2>
+            
+            <div class="setup-steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Instalar Git</h3>
+                        <div class="tabs">
+                            <button class="tab-btn active" data-tab="git-mac">🍎 macOS</button>
+                            <button class="tab-btn" data-tab="git-linux">🐧 Linux</button>
+                            <button class="tab-btn" data-tab="git-windows">🪟 Windows</button>
+                        </div>
+                        <div class="tab-content active" id="git-mac">
+                            <pre><code># Usando Homebrew
+brew install git
+
+# O usando Xcode Command Line Tools
+xcode-select --install</code></pre>
+                        </div>
+                        <div class="tab-content" id="git-linux">
+                            <pre><code># Ubuntu/Debian
+sudo apt update && sudo apt install git
+
+# Fedora
+sudo dnf install git
+
+# Arch Linux
+sudo pacman -S git</code></pre>
+                        </div>
+                        <div class="tab-content" id="git-windows">
+                            <pre><code># Descargar desde: https://git-scm.com/download/win
+
+# O usando Chocolatey
+choco install git
+
+# O usando Winget
+winget install --id Git.Git -e</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Instalar NVM (Node Version Manager)</h3>
+                        <div class="tabs">
+                            <button class="tab-btn active" data-tab="nvm-mac">🍎 macOS</button>
+                            <button class="tab-btn" data-tab="nvm-linux">🐧 Linux</button>
+                            <button class="tab-btn" data-tab="nvm-windows">🪟 Windows</button>
+                        </div>
+                        <div class="tab-content active" id="nvm-mac">
+                            <pre><code># Instalar NVM
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+
+# Recargar configuración
+source ~/.zshrc  # o ~/.bashrc
+
+# Verificar
+nvm --version</code></pre>
+                        </div>
+                        <div class="tab-content" id="nvm-linux">
+                            <pre><code># Instalar NVM
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+
+# Recargar configuración
+source ~/.bashrc
+
+# Verificar
+nvm --version</code></pre>
+                        </div>
+                        <div class="tab-content" id="nvm-windows">
+                            <pre><code># Descargar nvm-windows desde:
+# https://github.com/coreybutler/nvm-windows/releases
+
+# Ejecutar nvm-setup.exe
+
+# Verificar (en nueva terminal)
+nvm version</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Instalar Node.js v20</h3>
+                        <pre><code># Instalar Node.js v20
+nvm install 20
+
+# Usar Node.js v20
+nvm use 20
+
+# Establecer como versión por defecto
+nvm alias default 20  # macOS/Linux
+
+# Verificar instalación
+node --version  # Debe mostrar v20.x.x
+npm --version   # Debe mostrar 10.x.x</code></pre>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Clonar el Repositorio</h3>
+                        <pre><code># Clonar repositorio
+git clone https://github.com/tu-usuario/design-patterns.git
+cd design-patterns
+
+# Cambiar a rama students
+git checkout students
+
+# Instalar dependencias
+npm install
+
+# Ejecutar un ejemplo
+npm run example:singleton</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-success">
+                <strong>✅ ¡Listo!</strong> Ahora estás preparado para comenzar el curso.
+            </div>
+        </div>
+    </section>
+
+    <!-- Patterns Section -->
+    <section id="patterns" class="section">
+        <div class="container">
+            <h2>🎯 Patrones de Diseño</h2>
+            
+            <div class="pattern-category">
+                <h3>🏗️ Patrones Creacionales</h3>
+                <p class="category-desc">Controlan cómo se crean los objetos</p>
+                <div class="pattern-grid">
+                    <div class="pattern-card">
+                        <h4>Singleton</h4>
+                        <p>Garantiza una única instancia de una clase</p>
+                        <div class="pattern-links">
+                            <a href="https://refactoring.guru/es/design-patterns/singleton" target="_blank" class="link">📖 Teoría</a>
+                            <code>npm run example:singleton</code>
+                        </div>
+                    </div>
+                    <div class="pattern-card">
+                        <h4>Factory Method</h4>
+                        <p>Crea objetos sin especificar la clase exacta</p>
+                        <div class="pattern-links">
+                            <a href="https://refactoring.guru/es/design-patterns/factory-method" target="_blank" class="link">📖 Teoría</a>
+                            <code>npm run example:factory</code>
+                        </div>
+                    </div>
+                    <div class="pattern-card">
+                        <h4>Builder</h4>
+                        <p>Construye objetos complejos paso a paso</p>
+                        <div class="pattern-links">
+                            <a href="https://refactoring.guru/es/design-patterns/builder" target="_blank" class="link">📖 Teoría</a>
+                            <code>npm run example:builder</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pattern-category">
+                <h3>🔧 Patrones Estructurales</h3>
+                <p class="category-desc">Organizan las relaciones entre objetos</p>
+                <div class="pattern-grid">
+                    <div class="pattern-card">
+                        <h4>Adapter</h4>
+                        <p>Hace que interfaces incompatibles trabajen juntas</p>
+                        <div class="pattern-links">
+                            <a href="https://refactoring.guru/es/design-patterns/adapter" target="_blank" class="link">📖 Teoría</a>
+                            <code>npm run example:adapter</code>
+                        </div>
+                    </div>
+                    <div class="pattern-card">
+                        <h4>Decorator</h4>
+                        <p>Añade funcionalidad sin modificar el código</p>
+                        <div class="pattern-links">
+                            <a href="https://refactoring.guru/es/design-patterns/decorator" target="_blank" class="link">📖 Teoría</a>
+                            <code>npm run example:decorator</code>
+                        </div>
+                    </div>
+                    <div class="pattern-card">
+                        <h4>Facade</h4>
+                        <p>Simplifica sistemas complejos</p>
+                        <div class="pattern-links">
+                            <a href="https://refactoring.guru/es/design-patterns/facade" target="_blank" class="link">📖 Teoría</a>
+                            <code>npm run example:facade</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pattern-category">
+                <h3>🎭 Patrones de Comportamiento</h3>
+                <p class="category-desc">Definen cómo los objetos se comunican</p>
+                <div class="pattern-grid">
+                    <div class="pattern-card">
+                        <h4>Strategy</h4>
+                        <p>Intercambia algoritmos en tiempo de ejecución</p>
+                        <div class="pattern-links">
+                            <a href="https://refactoring.guru/es/design-patterns/strategy" target="_blank" class="link">📖 Teoría</a>
+                            <code>npm run example:strategy</code>
+                        </div>
+                    </div>
+                    <div class="pattern-card">
+                        <h4>Observer</h4>
+                        <p>Notifica cambios a múltiples objetos</p>
+                        <div class="pattern-links">
+                            <a href="https://refactoring.guru/es/design-patterns/observer" target="_blank" class="link">📖 Teoría</a>
+                            <code>npm run example:observer</code>
+                        </div>
+                    </div>
+                    <div class="pattern-card">
+                        <h4>Command</h4>
+                        <p>Encapsula acciones como objetos</p>
+                        <div class="pattern-links">
+                            <a href="https://refactoring.guru/es/design-patterns/command" target="_blank" class="link">📖 Teoría</a>
+                            <code>npm run example:command</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Exercises Section -->
+    <section id="exercises" class="section section-alt">
+        <div class="container">
+            <h2>💪 Ejercicios Prácticos</h2>
+            <p class="section-intro">Cada patrón incluye un ejercicio para que practiques. Las soluciones están comentadas en el código.</p>
+            
+            <div class="exercise-list">
+                <div class="exercise-item">
+                    <div class="exercise-header">
+                        <span class="exercise-number">1</span>
+                        <h4>Singleton - ConfigManager</h4>
+                    </div>
+                    <p>Implementa un gestor de configuración usando el patrón Singleton</p>
+                    <code>npm run exercise:singleton</code>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-header">
+                        <span class="exercise-number">2</span>
+                        <h4>Factory Method - Sistema de Pagos</h4>
+                    </div>
+                    <p>Crea factories para diferentes métodos de pago</p>
+                    <code>npm run exercise:factory</code>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-header">
+                        <span class="exercise-number">3</span>
+                        <h4>Builder - EmailBuilder</h4>
+                    </div>
+                    <p>Construye emails complejos con una interfaz fluida</p>
+                    <code>npm run exercise:builder</code>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-header">
+                        <span class="exercise-number">4</span>
+                        <h4>Adapter - Logger Adapter</h4>
+                    </div>
+                    <p>Adapta diferentes sistemas de logging a una interfaz común</p>
+                    <code>npm run exercise:adapter</code>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-header">
+                        <span class="exercise-number">5</span>
+                        <h4>Decorator - Text Formatters</h4>
+                    </div>
+                    <p>Implementa decoradores para formatear texto con HTML</p>
+                    <code>npm run exercise:decorator</code>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-header">
+                        <span class="exercise-number">6</span>
+                        <h4>Facade - Home Theater</h4>
+                    </div>
+                    <p>Simplifica el control de un sistema de cine en casa</p>
+                    <code>npm run exercise:facade</code>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-header">
+                        <span class="exercise-number">7</span>
+                        <h4>Strategy - Compression Strategies</h4>
+                    </div>
+                    <p>Implementa diferentes estrategias de compresión</p>
+                    <code>npm run exercise:strategy</code>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-header">
+                        <span class="exercise-number">8</span>
+                        <h4>Observer - Weather Station</h4>
+                    </div>
+                    <p>Crea una estación meteorológica con múltiples displays</p>
+                    <code>npm run exercise:observer</code>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-header">
+                        <span class="exercise-number">9</span>
+                        <h4>Command - Remote Control</h4>
+                    </div>
+                    <p>Implementa un control remoto con undo/redo</p>
+                    <code>npm run exercise:command</code>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resources Section -->
+    <section id="resources" class="section">
+        <div class="container">
+            <h2>📚 Recursos Adicionales</h2>
+            <div class="resources-grid">
+                <a href="https://refactoring.guru/es/design-patterns" target="_blank" class="resource-card">
+                    <div class="resource-icon">📖</div>
+                    <h4>Refactoring Guru</h4>
+                    <p>Explicaciones visuales y ejemplos de todos los patrones</p>
+                </a>
+                <a href="https://www.typescriptlang.org/docs/" target="_blank" class="resource-card">
+                    <div class="resource-icon">📘</div>
+                    <h4>TypeScript Docs</h4>
+                    <p>Documentación oficial de TypeScript</p>
+                </a>
+                <a href="https://github.com/tu-usuario/design-patterns" target="_blank" class="resource-card">
+                    <div class="resource-icon">💻</div>
+                    <h4>Repositorio GitHub</h4>
+                    <p>Código fuente completo del curso</p>
+                </a>
+                <a href="https://en.wikipedia.org/wiki/SOLID" target="_blank" class="resource-card">
+                    <div class="resource-icon">🏗️</div>
+                    <h4>Principios SOLID</h4>
+                    <p>Fundamentos de diseño de software</p>
+                </a>
+            </div>
+
+            <div class="tips-box">
+                <h3>💡 Consejos para Aprender</h3>
+                <ul>
+                    <li>No memorices - entiende el problema que resuelve cada patrón</li>
+                    <li>Practica implementando los ejercicios sin mirar las soluciones</li>
+                    <li>Compara tu solución con la proporcionada</li>
+                    <li>Piensa en cómo aplicar estos patrones en tus proyectos</li>
+                    <li>No abuses de los patrones - úsalos cuando realmente resuelvan un problema</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>Curso de Patrones de Diseño en TypeScript</p>
+            <p>Construido con ❤️ para aprender y enseñar</p>
+            <div class="footer-links">
+                <a href="https://github.com/tu-usuario/design-patterns" target="_blank">GitHub</a>
+                <a href="https://refactoring.guru/es/design-patterns" target="_blank">Refactoring Guru</a>
+                <a href="https://www.typescriptlang.org/" target="_blank">TypeScript</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

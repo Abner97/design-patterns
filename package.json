@@ -1,0 +1,31 @@
+{
+  "name": "design-patterns-course",
+  "version": "1.0.0",
+  "description": "Curso de Patrones de Diseño en TypeScript",
+  "scripts": {
+    "build": "tsc",
+    "example:singleton": "ts-node src/creational/singleton/demo/example.ts",
+    "example:factory": "ts-node src/creational/factory/demo/example.ts",
+    "example:builder": "ts-node src/creational/builder/demo/example.ts",
+    "example:adapter": "ts-node src/structural/adapter/demo/example.ts",
+    "example:decorator": "ts-node src/structural/decorator/demo/example.ts",
+    "example:facade": "ts-node src/structural/facade/demo/example.ts",
+    "example:strategy": "ts-node src/behavioral/strategy/demo/example.ts",
+    "example:observer": "ts-node src/behavioral/observer/demo/example.ts",
+    "example:command": "ts-node src/behavioral/command/demo/example.ts",
+    "exercise:singleton": "ts-node src/creational/singleton/exercise.ts",
+    "exercise:factory": "ts-node src/creational/factory/exercise.ts",
+    "exercise:builder": "ts-node src/creational/builder/exercise.ts",
+    "exercise:adapter": "ts-node src/structural/adapter/exercise.ts",
+    "exercise:decorator": "ts-node src/structural/decorator/exercise.ts",
+    "exercise:facade": "ts-node src/structural/facade/exercise.ts",
+    "exercise:strategy": "ts-node src/behavioral/strategy/exercise.ts",
+    "exercise:observer": "ts-node src/behavioral/observer/exercise.ts",
+    "exercise:command": "ts-node src/behavioral/command/exercise.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.0.0"
+  }
+}

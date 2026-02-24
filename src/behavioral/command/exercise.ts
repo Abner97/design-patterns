@@ -1,0 +1,187 @@
+// EJERCICIO COMMAND
+// Implementa un control remoto para dispositivos del hogar
+
+/*
+INSTRUCCIONES:
+1. Crea una interfaz Command con execute() y undo()
+2. Implementa dispositivos: Light, TV, Fan
+3. Crea comandos para encender/apagar cada dispositivo
+4. Implementa un RemoteControl que pueda ejecutar y deshacer comandos
+
+EJEMPLO DE USO:
+const remote = new RemoteControl();
+const light = new Light();
+remote.setCommand(new LightOnCommand(light));
+remote.pressButton(); // Luz encendida
+remote.pressUndo(); // Luz apagada
+*/
+
+// Dispositivos (no modificar)
+class Light {
+  on(): void { console.log("💡 Luz encendida"); }
+  off(): void { console.log("💡 Luz apagada"); }
+}
+
+class TV {
+  on(): void { console.log("📺 TV encendida"); }
+  off(): void { console.log("📺 TV apagada"); }
+}
+
+class Fan {
+  on(): void { console.log("🌀 Ventilador encendido"); }
+  off(): void { console.log("🌀 Ventilador apagado"); }
+  setSpeed(speed: number): void { console.log(`🌀 Velocidad: ${speed}`); }
+}
+
+// TODO: Implementa aquí tu solución
+
+// ============================================
+// SOLUCIÓN (Descomenta para ver la respuesta)
+// ============================================
+
+/*
+interface Command {
+  execute(): void;
+  undo(): void;
+}
+
+class LightOnCommand implements Command {
+  constructor(private light: Light) {}
+
+  execute(): void {
+    this.light.on();
+  }
+
+  undo(): void {
+    this.light.off();
+  }
+}
+
+class LightOffCommand implements Command {
+  constructor(private light: Light) {}
+
+  execute(): void {
+    this.light.off();
+  }
+
+  undo(): void {
+    this.light.on();
+  }
+}
+
+class TVOnCommand implements Command {
+  constructor(private tv: TV) {}
+
+  execute(): void {
+    this.tv.on();
+  }
+
+  undo(): void {
+    this.tv.off();
+  }
+}
+
+class TVOffCommand implements Command {
+  constructor(private tv: TV) {}
+
+  execute(): void {
+    this.tv.off();
+  }
+
+  undo(): void {
+    this.tv.on();
+  }
+}
+
+class FanOnCommand implements Command {
+  constructor(private fan: Fan, private speed: number = 3) {}
+
+  execute(): void {
+    this.fan.on();
+    this.fan.setSpeed(this.speed);
+  }
+
+  undo(): void {
+    this.fan.off();
+  }
+}
+
+class RemoteControl {
+  private currentCommand: Command | null = null;
+  private commandHistory: Command[] = [];
+
+  public setCommand(command: Command): void {
+    this.currentCommand = command;
+  }
+
+  public pressButton(): void {
+    if (this.currentCommand) {
+      this.currentCommand.execute();
+      this.commandHistory.push(this.currentCommand);
+    }
+  }
+
+  public pressUndo(): void {
+    if (this.commandHistory.length > 0) {
+      const lastCommand = this.commandHistory.pop();
+      lastCommand?.undo();
+    } else {
+      console.log("⚠️  No hay comandos para deshacer");
+    }
+  }
+}
+
+// Comando macro (ejecuta múltiples comandos)
+class MacroCommand implements Command {
+  constructor(private commands: Command[]) {}
+
+  execute(): void {
+    console.log("🎯 Ejecutando macro...");
+    this.commands.forEach(cmd => cmd.execute());
+  }
+
+  undo(): void {
+    console.log("🎯 Deshaciendo macro...");
+    this.commands.reverse().forEach(cmd => cmd.undo());
+  }
+}
+
+// PRUEBA TU SOLUCIÓN
+console.log("=== EJERCICIO COMMAND: Remote Control ===\n");
+
+const remote = new RemoteControl();
+const light = new Light();
+const tv = new TV();
+const fan = new Fan();
+
+console.log("--- Encender luz ---\n");
+remote.setCommand(new LightOnCommand(light));
+remote.pressButton();
+
+console.log("\n--- Encender TV ---\n");
+remote.setCommand(new TVOnCommand(tv));
+remote.pressButton();
+
+console.log("\n--- Encender ventilador ---\n");
+remote.setCommand(new FanOnCommand(fan, 5));
+remote.pressButton();
+
+console.log("\n--- Deshacer última acción ---\n");
+remote.pressUndo();
+
+console.log("\n--- Deshacer otra vez ---\n");
+remote.pressUndo();
+
+console.log("\n--- Macro: Modo noche (apagar todo) ---\n");
+const nightMode = new MacroCommand([
+  new LightOffCommand(light),
+  new TVOffCommand(tv),
+  new FanOnCommand(fan, 1)
+]);
+
+remote.setCommand(nightMode);
+remote.pressButton();
+
+console.log("\n--- Deshacer modo noche ---\n");
+remote.pressUndo();
+*/

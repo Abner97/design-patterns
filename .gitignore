@@ -6,7 +6,10 @@ yarn.lock
 # Build output
 dist/
 build/
+
+# Compiled JavaScript (except docs/)
 *.js
+!docs/**/*.js
 *.js.map
 
 # TypeScript cache

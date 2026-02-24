@@ -15,57 +15,11 @@ compressor.compress("documento.txt"); // documento.txt.zip
 
 // TODO: Implementa aquí tu solución
 
-// ============================================
-// SOLUCIÓN (Descomenta para ver la respuesta)
-// ============================================
-
-/*
-interface CompressionStrategy {
-  compress(file: string): string;
-}
-
-class ZipCompression implements CompressionStrategy {
-  compress(file: string): string {
-    console.log(`📦 Comprimiendo ${file} con ZIP...`);
-    return `${file}.zip`;
-  }
-}
-
-class RarCompression implements CompressionStrategy {
-  compress(file: string): string {
-    console.log(`📦 Comprimiendo ${file} con RAR...`);
-    return `${file}.rar`;
-  }
-}
-
-class TarCompression implements CompressionStrategy {
-  compress(file: string): string {
-    console.log(`📦 Comprimiendo ${file} con TAR...`);
-    return `${file}.tar.gz`;
-  }
-}
-
-class FileCompressor {
-  private strategy: CompressionStrategy;
-
-  constructor(strategy: CompressionStrategy) {
-    this.strategy = strategy;
-  }
-
-  public setStrategy(strategy: CompressionStrategy): void {
-    this.strategy = strategy;
-  }
-
-  public compress(file: string): string {
-    const result = this.strategy.compress(file);
-    console.log(`✅ Archivo comprimido: ${result}\n`);
-    return result;
-  }
-}
-
 // PRUEBA TU SOLUCIÓN
 console.log("=== EJERCICIO STRATEGY: File Compression ===\n");
 
+// Descomenta cuando hayas implementado tu solución
+/*
 const files = ["documento.txt", "imagen.png", "video.mp4"];
 
 const compressor = new FileCompressor(new ZipCompression());

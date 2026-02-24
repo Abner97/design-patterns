@@ -3,7 +3,7 @@
 
 /*
 INSTRUCCIONES:
-1. Tienes varios dispositivos: TV, SoundSystem, DVDPlayer, Lights
+1. Tienes varios dispositivos: Television, SoundSystem, DVDPlayer, RoomLights
 2. Cada dispositivo tiene métodos on(), off() y otros específicos
 3. Crea un HomeTheaterFacade con métodos watchMovie() y endMovie()
 4. watchMovie() debe: apagar luces, encender TV, encender sonido, reproducir DVD
@@ -42,50 +42,11 @@ class RoomLights {
 
 // TODO: Implementa aquí tu solución
 
-// ============================================
-// SOLUCIÓN (Descomenta para ver la respuesta)
-// ============================================
-
-/*
-class HomeTheaterFacade {
-  private tv: Television;
-  private sound: SoundSystem;
-  private dvd: DVDPlayer;
-  private lights: RoomLights;
-
-  constructor() {
-    this.tv = new Television();
-    this.sound = new SoundSystem();
-    this.dvd = new DVDPlayer();
-    this.lights = new RoomLights();
-  }
-
-  public watchMovie(movie: string): void {
-    console.log("🎬 Preparando cine en casa...\n");
-    this.lights.dim(10);
-    this.tv.on();
-    this.tv.setInput("DVD");
-    this.sound.on();
-    this.sound.setVolume(8);
-    this.dvd.on();
-    this.dvd.play(movie);
-    console.log("\n🍿 ¡Disfruta la película!\n");
-  }
-
-  public endMovie(): void {
-    console.log("🎬 Finalizando cine en casa...\n");
-    this.dvd.stop();
-    this.dvd.off();
-    this.sound.off();
-    this.tv.off();
-    this.lights.on();
-    console.log("\n✅ Sistema apagado\n");
-  }
-}
-
 // PRUEBA TU SOLUCIÓN
 console.log("=== EJERCICIO FACADE: Home Theater ===\n");
 
+// Descomenta cuando hayas implementado tu solución
+/*
 const homeTheater = new HomeTheaterFacade();
 
 homeTheater.watchMovie("Inception");

@@ -17,59 +17,11 @@ console.log(text.getText()); // <i><b>Hola Mundo</b></i>
 
 // TODO: Implementa aquí tu solución
 
-// ============================================
-// SOLUCIÓN (Descomenta para ver la respuesta)
-// ============================================
-
-/*
-interface TextComponent {
-  getText(): string;
-}
-
-class PlainText implements TextComponent {
-  constructor(private text: string) {}
-
-  getText(): string {
-    return this.text;
-  }
-}
-
-abstract class TextDecorator implements TextComponent {
-  constructor(protected component: TextComponent) {}
-  abstract getText(): string;
-}
-
-class BoldDecorator extends TextDecorator {
-  getText(): string {
-    return `<b>${this.component.getText()}</b>`;
-  }
-}
-
-class ItalicDecorator extends TextDecorator {
-  getText(): string {
-    return `<i>${this.component.getText()}</i>`;
-  }
-}
-
-class UnderlineDecorator extends TextDecorator {
-  getText(): string {
-    return `<u>${this.component.getText()}</u>`;
-  }
-}
-
-class ColorDecorator extends TextDecorator {
-  constructor(component: TextComponent, private color: string) {
-    super(component);
-  }
-
-  getText(): string {
-    return `<span style="color:${this.color}">${this.component.getText()}</span>`;
-  }
-}
-
 // PRUEBA TU SOLUCIÓN
 console.log("=== EJERCICIO DECORATOR: Text Formatters ===\n");
 
+// Descomenta cuando hayas implementado tu solución
+/*
 let text1: TextComponent = new PlainText("Hola Mundo");
 console.log("Texto plano:", text1.getText());
 

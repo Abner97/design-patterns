@@ -526,6 +526,80 @@ code {
     color: var(--primary);
 }
 
+/* Next.js section */
+.nextjs-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.rendering-table {
+    overflow-x: auto;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+}
+
+.rendering-table table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    font-size: 0.95rem;
+}
+
+.rendering-table th {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.rendering-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+}
+
+.rendering-table tr:last-child td {
+    border-bottom: none;
+}
+
+.rendering-table tr:hover td {
+    background: #f9fafb;
+}
+
+.rendering-table td code {
+    background: #f3f4f6;
+    color: var(--primary);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+
+.badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.badge-server {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.badge-client {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.badge-api {
+    background: #ede9fe;
+    color: #6d28d9;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .header h1 {

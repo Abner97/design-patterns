@@ -31,6 +31,7 @@
                 <li><a href="#about">Acerca del Curso</a></li>
                 <li><a href="#setup">Configuración</a></li>
                 <li><a href="#patterns">Patrones</a></li>
+                <li><a href="#nextjs">Proyecto Next.js</a></li>
                 <li><a href="#exercises">Ejercicios</a></li>
                 <li><a href="#resources">Recursos</a></li>
             </ul>
@@ -326,6 +327,335 @@ npm run example:singleton</code></pre>
         </div>
     </section>
 
+    <!-- Next.js Project Section -->
+    <section id="nextjs" class="section section-alt">
+        <div class="container">
+            <h2>⚡ Proyecto Next.js — Pokédex</h2>
+            <p class="section-intro">Aplicación real que aplica tres patrones de diseño consumiendo la PokéAPI. Construida con Next.js 16, TypeScript y Tailwind CSS.</p>
+
+            <div class="grid" style="margin-bottom: 2rem;">
+                <div class="card">
+                    <div class="card-icon">🏭</div>
+                    <h3>Singleton</h3>
+                    <p>Cliente HTTP único para toda la app</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🏛️</div>
+                    <h3>Facade</h3>
+                    <p>Interfaz unificada sobre la PokéAPI</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">👁️</div>
+                    <h3>Observer</h3>
+                    <p>Favoritos reactivos con notificaciones</p>
+                </div>
+            </div>
+
+            <div class="nextjs-steps">
+
+                <!-- Step 1: Create project -->
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Crear el proyecto Next.js</h3>
+                        <p style="color: var(--text-light); margin-bottom: 1rem;">Crea la app fuera del repositorio de patrones con App Router, TypeScript y Tailwind.</p>
+                        <pre><code>npx create-next-app@latest pokedex-patterns \
+  --typescript \
+  --tailwind \
+  --eslint \
+  --app \
+  --no-src-dir \
+  --import-alias "@/*" \
+  --yes
+
+cd pokedex-patterns</code></pre>
+                    </div>
+                </div>
+
+                <!-- Step 2: Folder structure -->
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Crear la estructura de carpetas</h3>
+                        <pre><code>mkdir -p lib/patterns \
+         app/api/pokemon/"[name]" \
+         app/pokemon/"[name]" \
+         app/favorites \
+         components</code></pre>
+                        <p style="color: var(--text-light); margin-top: 1rem;">Estructura final del proyecto:</p>
+                        <pre><code>pokedex-patterns/
+├── lib/
+│   ├── patterns/
+│   │   ├── PokeApiClient.ts   ← Singleton
+│   │   ├── PokemonFacade.ts   ← Facade
+│   │   └── FavoritesStore.ts  ← Observer
+│   ├── FavoritesContext.tsx
+│   ├── types.ts
+│   └── typeColors.ts
+├── app/
+│   ├── api/pokemon/
+│   │   ├── route.ts
+│   │   └── [name]/route.ts
+│   ├── pokemon/[name]/page.tsx
+│   ├── favorites/page.tsx
+│   ├── layout.tsx
+│   └── page.tsx
+└── components/
+    ├── Navbar.tsx
+    ├── PokemonCard.tsx
+    ├── FavoriteButton.tsx
+    └── StatBar.tsx</code></pre>
+                    </div>
+                </div>
+
+                <!-- Step 3: Patterns -->
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Implementar los patrones de diseño</h3>
+
+                        <div class="tabs">
+                            <button class="tab-btn active" data-tab="tab-singleton">🏭 Singleton</button>
+                            <button class="tab-btn" data-tab="tab-facade">🏛️ Facade</button>
+                            <button class="tab-btn" data-tab="tab-observer">👁️ Observer</button>
+                        </div>
+
+                        <div class="tab-content active" id="tab-singleton">
+                            <p style="color: var(--text-light); margin-bottom: 0.75rem;"><code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;">lib/patterns/PokeApiClient.ts</code></p>
+                            <pre><code>// CREACIONAL: Singleton
+export class PokeApiClient {
+  private static instance: PokeApiClient;
+  private readonly baseUrl = "https://pokeapi.co/api/v2";
+
+  private constructor() {}
+
+  static getInstance(): PokeApiClient {
+    if (!PokeApiClient.instance) {
+      PokeApiClient.instance = new PokeApiClient();
+    }
+    return PokeApiClient.instance;
+  }
+
+  async get&lt;T&gt;(path: string): Promise&lt;T&gt; {
+    const res = await fetch(`${this.baseUrl}${path}`, {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) throw new Error(`PokeAPI error: ${res.status}`);
+    return res.json() as Promise&lt;T&gt;;
+  }
+}</code></pre>
+                        </div>
+
+                        <div class="tab-content" id="tab-facade">
+                            <p style="color: var(--text-light); margin-bottom: 0.75rem;"><code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;">lib/patterns/PokemonFacade.ts</code></p>
+                            <pre><code>// ESTRUCTURAL: Facade
+import { PokeApiClient } from "./PokeApiClient";
+import type { PokemonDetail, PokemonListResponse } from "../types";
+
+export class PokemonFacade {
+  private client = PokeApiClient.getInstance();
+
+  async getList(limit = 20, offset = 0): Promise&lt;PokemonListResponse&gt; {
+    return this.client.get(`/pokemon?limit=${limit}&amp;offset=${offset}`);
+  }
+
+  async getDetail(nameOrId: string | number): Promise&lt;PokemonDetail&gt; {
+    return this.client.get(`/pokemon/${nameOrId}`);
+  }
+
+  async getMultiple(names: string[]): Promise&lt;PokemonDetail[]&gt; {
+    return Promise.all(names.map((n) => this.getDetail(n)));
+  }
+}</code></pre>
+                        </div>
+
+                        <div class="tab-content" id="tab-observer">
+                            <p style="color: var(--text-light); margin-bottom: 0.75rem;"><code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;">lib/patterns/FavoritesStore.ts</code></p>
+                            <pre><code>// COMPORTAMIENTO: Observer
+export interface FavoritesObserver {
+  onFavoritesChange(favorites: string[]): void;
+}
+
+export class FavoritesStore {
+  private static instance: FavoritesStore;
+  private observers: FavoritesObserver[] = [];
+  private favorites: Set&lt;string&gt;;
+
+  private constructor() {
+    const stored = typeof window !== "undefined"
+      ? localStorage.getItem("poke-favorites") : null;
+    this.favorites = new Set(stored ? JSON.parse(stored) : []);
+  }
+
+  static getInstance(): FavoritesStore {
+    if (!FavoritesStore.instance)
+      FavoritesStore.instance = new FavoritesStore();
+    return FavoritesStore.instance;
+  }
+
+  subscribe(observer: FavoritesObserver): void {
+    this.observers.push(observer);
+  }
+
+  unsubscribe(observer: FavoritesObserver): void {
+    this.observers = this.observers.filter((o) => o !== observer);
+  }
+
+  toggle(name: string): void {
+    this.favorites.has(name)
+      ? this.favorites.delete(name)
+      : this.favorites.add(name);
+    const list = this.getAll();
+    this.observers.forEach((o) => o.onFavoritesChange(list));
+    localStorage.setItem("poke-favorites", JSON.stringify(list));
+  }
+
+  isFavorite(name: string): boolean { return this.favorites.has(name); }
+  getAll(): string[] { return Array.from(this.favorites); }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: API Routes -->
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Crear las API Routes de Next.js</h3>
+                        <p style="color: var(--text-light); margin-bottom: 1rem;">Las API Routes actúan como proxy entre el cliente y la PokéAPI, heredando la caché del Singleton.</p>
+
+                        <div class="tabs">
+                            <button class="tab-btn active" data-tab="tab-route-list">Lista</button>
+                            <button class="tab-btn" data-tab="tab-route-detail">Detalle</button>
+                        </div>
+
+                        <div class="tab-content active" id="tab-route-list">
+                            <p style="color: var(--text-light); margin-bottom: 0.75rem;"><code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;">app/api/pokemon/route.ts</code></p>
+                            <pre><code>import { NextRequest, NextResponse } from "next/server";
+import { PokemonFacade } from "@/lib/patterns/PokemonFacade";
+
+const facade = new PokemonFacade();
+
+export async function GET(req: NextRequest) {
+  const { searchParams } = req.nextUrl;
+  const limit = Number(searchParams.get("limit") ?? 20);
+  const offset = Number(searchParams.get("offset") ?? 0);
+  try {
+    const data = await facade.getList(limit, offset);
+    return NextResponse.json(data);
+  } catch {
+    return NextResponse.json(
+      { error: "Failed to fetch pokemon list" },
+      { status: 500 }
+    );
+  }
+}</code></pre>
+                        </div>
+
+                        <div class="tab-content" id="tab-route-detail">
+                            <p style="color: var(--text-light); margin-bottom: 0.75rem;"><code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;">app/api/pokemon/[name]/route.ts</code></p>
+                            <pre><code>import { NextRequest, NextResponse } from "next/server";
+import { PokemonFacade } from "@/lib/patterns/PokemonFacade";
+
+const facade = new PokemonFacade();
+
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: Promise&lt;{ name: string }&gt; }
+) {
+  const { name } = await params;
+  try {
+    const data = await facade.getDetail(name);
+    return NextResponse.json(data);
+  } catch {
+    return NextResponse.json(
+      { error: "Pokemon not found" },
+      { status: 404 }
+    );
+  }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5: Rendering strategy -->
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>Estrategia de renderizado</h3>
+                        <p style="color: var(--text-light); margin-bottom: 1rem;">Cada ruta usa la estrategia correcta según sus necesidades.</p>
+                        <div class="rendering-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Ruta</th>
+                                        <th>Estrategia</th>
+                                        <th>Motivo</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>/</code></td>
+                                        <td><span class="badge badge-client">Client Component</span></td>
+                                        <td>Paginación con estado del cliente</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>/pokemon/[name]</code></td>
+                                        <td><span class="badge badge-server">SSR</span></td>
+                                        <td>SEO + metadata dinámica</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>/favorites</code></td>
+                                        <td><span class="badge badge-client">Client Component</span></td>
+                                        <td>Lee localStorage vía Observer</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>/api/pokemon</code></td>
+                                        <td><span class="badge badge-api">API Route</span></td>
+                                        <td>Proxy + caché para la lista</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>/api/pokemon/[name]</code></td>
+                                        <td><span class="badge badge-api">API Route</span></td>
+                                        <td>Proxy + caché para detalles</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 6: Run -->
+                <div class="step">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <h3>Configurar y ejecutar</h3>
+                        <p style="color: var(--text-light); margin-bottom: 1rem;">Habilita las imágenes de la PokéAPI en <code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;">next.config.ts</code>:</p>
+                        <pre><code>import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: [{
+      protocol: "https",
+      hostname: "raw.githubusercontent.com",
+      pathname: "/PokeAPI/**",
+    }],
+  },
+};
+
+export default nextConfig;</code></pre>
+                        <p style="color: var(--text-light); margin: 1rem 0 0.5rem;">Luego ejecuta:</p>
+                        <pre><code>npm run dev</code></pre>
+                        <div class="alert alert-success" style="margin-top: 1rem;">
+                            <strong>✅ ¡Listo!</strong> Abre <strong>http://localhost:3000</strong> para ver la Pokédex.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
     <!-- Exercises Section -->
     <section id="exercises" class="section section-alt">
         <div class="container">
@@ -458,6 +788,8 @@ npm run example:singleton</code></pre>
                 <a href="https://github.com/Abner97/design-patterns" target="_blank">GitHub</a>
                 <a href="https://refactoring.guru/es/design-patterns" target="_blank">Refactoring Guru</a>
                 <a href="https://www.typescriptlang.org/" target="_blank">TypeScript</a>
+                <a href="https://pokeapi.co/" target="_blank">PokéAPI</a>
+                <a href="https://nextjs.org/" target="_blank">Next.js</a>
             </div>
         </div>
     </footer>

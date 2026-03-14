@@ -462,10 +462,6 @@ export class PokemonFacade {
   async getDetail(nameOrId: string | number): Promise&lt;PokemonDetail&gt; {
     return this.client.get(`/pokemon/${nameOrId}`);
   }
-
-  async getMultiple(names: string[]): Promise&lt;PokemonDetail[]&gt; {
-    return Promise.all(names.map((n) => this.getDetail(n)));
-  }
 }</code></pre>
                         </div>
 

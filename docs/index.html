@@ -32,6 +32,7 @@
                 <li><a href="#setup">Configuración</a></li>
                 <li><a href="#patterns">Patrones</a></li>
                 <li><a href="#nextjs">Proyecto Next.js</a></li>
+                <li><a href="#amplify">AWS Amplify</a></li>
                 <li><a href="#exercises">Ejercicios</a></li>
                 <li><a href="#resources">Recursos</a></li>
             </ul>
@@ -652,6 +653,469 @@ export default nextConfig;</code></pre>
         </div>
     </section>
 
+    <!-- Amplify Section -->
+    <section id="amplify" class="section">
+        <div class="container">
+            <h2>☁️ AWS Amplify Gen 2 — Auth + Base de Datos</h2>
+            <p class="section-intro">Agrega autenticación con <strong>Amazon Cognito</strong> y persistencia de favoritos en <strong>Amazon DynamoDB</strong> vía <strong>AWS AppSync</strong>. El estudiante implementa el código TypeScript; aquí se cubren los comandos, configuración y setup de AWS.</p>
+
+            <div class="grid" style="margin-bottom: 2rem;">
+                <div class="card">
+                    <div class="card-icon">🔐</div>
+                    <h3>Amazon Cognito</h3>
+                    <p>Login con email: registro, confirmación, recuperación</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">⚡</div>
+                    <h3>AWS AppSync</h3>
+                    <p>API GraphQL auto-generada con autorización por owner</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🗄️</div>
+                    <h3>Amazon DynamoDB</h3>
+                    <p>Tabla de favoritos — cada usuario solo ve los suyos</p>
+                </div>
+            </div>
+
+            <div class="amplify-steps">
+
+                <!-- Step 1: Install dependencies -->
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Instalar dependencias de Amplify</h3>
+                        <pre><code>npm install aws-amplify @aws-amplify/adapter-nextjs @aws-amplify/ui-react \
+  @aws-amplify/backend @aws-amplify/backend-auth @aws-amplify/backend-data</code></pre>
+                        <div class="rendering-table" style="margin-top: 1rem;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Paquete</th>
+                                        <th>Para qué sirve</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>aws-amplify</code></td>
+                                        <td>SDK principal — auth, data, Hub</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>@aws-amplify/adapter-nextjs</code></td>
+                                        <td>Integración SSR con Next.js</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>@aws-amplify/ui-react</code></td>
+                                        <td>Componentes UI: Authenticator, useAuthenticator</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>@aws-amplify/backend</code></td>
+                                        <td>Define el backend Gen 2 (CDK bajo el capó)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>@aws-amplify/backend-auth</code></td>
+                                        <td>Recurso de autenticación (Cognito)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>@aws-amplify/backend-data</code></td>
+                                        <td>Recurso de datos (AppSync + DynamoDB)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Bootstrap CDK -->
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>⚙️ Bootstrap CDK (CRÍTICO)</h3>
+                        <p style="color: var(--text-light); margin-bottom: 1rem;">Ejecutar <strong>una sola vez</strong> por cuenta de AWS. Esto prepara la cuenta para despliegues con CDK.</p>
+                        <pre><code>npx cdk bootstrap aws://&lt;ACCOUNT_ID&gt;/us-east-1</code></pre>
+                        <div class="info-box" style="margin-top: 1rem;">
+                            <h3>✅ ¿Qué hace este comando?</h3>
+                            <ul style="list-style: none; padding-left: 0;">
+                                <li style="padding: 0.4rem 0; padding-left: 1.5rem; position: relative;"><span style="position: absolute; left: 0;">📦</span> Crea un bucket S3: <code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;">cdk-hnb659fds-assets-*</code></li>
+                                <li style="padding: 0.4rem 0; padding-left: 1.5rem; position: relative;"><span style="position: absolute; left: 0;">🔑</span> Crea roles IAM para AWS Cloud Development Kit</li>
+                                <li style="padding: 0.4rem 0; padding-left: 1.5rem; position: relative;"><span style="position: absolute; left: 0;">📋</span> Guarda configuración en AWS Systems Manager Parameter Store</li>
+                            </ul>
+                        </div>
+                        <div class="alert alert-warning" style="margin-top: 1rem;">
+                            <strong>🎓 Recomendación para el profesor:</strong> Ejecutar este comando en la cuenta donde vayas a deplegar el app, solo se ejecuta una sola vez..
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: IAM Role -->
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>🔐 Crear Rol IAM para Amplify Hosting</h3>
+                        <p style="color: var(--text-light); margin-bottom: 1rem;">Este rol es usado por el build de Amplify Hosting para desplegar el backend. Crear en <strong>IAM → Roles → Create Role</strong> con trust policy para <code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;">amplify.amazonaws.com</code>.</p>
+                        <p style="color: var(--text-light); margin-bottom: 1rem;">Adjuntar la siguiente política (inline o managed):</p>
+                        <pre><code>{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "Logs",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+        "logs:CreateLogGroup",
+        "logs:DescribeLogGroups"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "S3Access",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:ListBucket",
+        "s3:DeleteObject"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "SSMForCDKBootstrap",
+      "Effect": "Allow",
+      "Action": [
+        "ssm:GetParameter",
+        "ssm:GetParameters",
+        "ssm:GetParametersByPath"
+      ],
+      "Resource": "arn:aws:ssm:*:*:parameter/cdk-bootstrap/*"
+    },
+    {
+      "Sid": "CloudFormationAccess",
+      "Effect": "Allow",
+      "Action": [ "cloudformation:*" ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "IAMBasic",
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateRole",
+        "iam:AttachRolePolicy",
+        "iam:GetRole",
+        "iam:DeleteRole",
+        "iam:DetachRolePolicy"
+      ],
+      "Resource": "arn:aws:iam::*:role/amplify-*"
+    },
+    {
+      "Sid": "IAMPassRoleRestricted",
+      "Effect": "Allow",
+      "Action": "iam:PassRole",
+      "Resource": "arn:aws:iam::*:role/amplify-*",
+      "Condition": {
+        "StringEquals": {
+          "iam:PassedToService": [
+            "lambda.amazonaws.com",
+            "appsync.amazonaws.com",
+            "cloudformation.amazonaws.com"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "AppSyncAccess",
+      "Effect": "Allow",
+      "Action": [ "appsync:*" ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "LambdaAccess",
+      "Effect": "Allow",
+      "Action": [ "lambda:*" ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "DynamoDBAccess",
+      "Effect": "Allow",
+      "Action": [ "dynamodb:*" ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowCDKBucketExplicit",
+      "Effect": "Allow",
+      "Action": "s3:*",
+      "Resource": [
+        "arn:aws:s3:::cdk-hnb659fds-assets-*",
+        "arn:aws:s3:::cdk-hnb659fds-assets-*/*"
+      ]
+    }
+  ]
+}</code></pre>
+                        <div class="alert alert-warning" style="margin-top: 1rem;">
+                            <strong>🎓 Recomendación:</strong> Agregar esta politica a AmplifySSRLoggingRole-xyz... si el deploy falla cambiar cdk-hnb659fds por el que muestre el log.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Create folder structure -->
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Crear estructura de carpetas del backend</h3>
+                        <pre><code>mkdir -p amplify/auth amplify/data
+mkdir -p app/login</code></pre>
+                        <p style="color: var(--text-light); margin-top: 1rem;">Estructura de archivos a crear:</p>
+                        <pre><code>amplify/
+├── package.json          ← ESM config
+├── backend.ts            ← Punto de entrada
+├── auth/
+│   └── resource.ts       ← Cognito (estudiante implementa)
+└── data/
+    └── resource.ts       ← AppSync + DynamoDB (estudiante implementa)
+
+lib/
+├── amplify-config.ts     ← Configuración cliente (estudiante implementa)
+└── FavoritesContext.tsx   ← Actualizar con auth Hub (estudiante implementa)
+
+components/
+├── AmplifyProvider.tsx    ← Wrapper (estudiante implementa)
+└── Navbar.tsx             ← Actualizar con sign in/out (estudiante implementa)
+
+app/
+├── layout.tsx             ← Actualizar con AmplifyProvider (estudiante implementa)
+└── login/
+    └── page.tsx           ← Página de login (estudiante implementa)</code></pre>
+                    </div>
+                </div>
+
+                <!-- Step 5: amplify/package.json -->
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>Configurar ESM en amplify/</h3>
+                        <p style="color: var(--text-light); margin-bottom: 1rem;">Crear <code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;">amplify/package.json</code> — necesario para que el build de Amplify resuelva los imports como ESM:</p>
+                        <pre><code>{ "type": "module" }</code></pre>
+                        <div class="alert alert-warning" style="margin-top: 1rem;">
+                            <strong>⚠️ Sin este archivo</strong> el deploy falla con: <code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;">Cannot find module 'amplify/auth/resource'</code>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 6: amplify.yml -->
+                <div class="step">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <h3>🚀 Configuración de Build — amplify.yml</h3>
+                        <p style="color: var(--text-light); margin-bottom: 1rem;">Crear <code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;">amplify.yml</code> en la raíz del proyecto:</p>
+                        <pre><code>version: 1
+
+backend:
+  phases:
+    build:
+      commands:
+        - npm ci --cache .npm --prefer-offline
+        - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
+
+frontend:
+  phases:
+    build:
+      commands:
+        - npm run build
+
+  artifacts:
+    baseDirectory: .next
+    files:
+      - '**/*'
+
+  cache:
+    paths:
+      - .next/cache/**/*
+      - .npm/**/*
+      - node_modules/**/*</code></pre>
+                        <div class="info-box" style="margin-top: 1rem;">
+                            <h3>¿Qué hace cada fase?</h3>
+                            <ul style="list-style: none; padding-left: 0;">
+                                <li style="padding: 0.4rem 0; padding-left: 1.5rem; position: relative;"><span style="position: absolute; left: 0;">1️⃣</span> <strong>Backend:</strong> <code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;">ampx pipeline-deploy</code> despliega Cognito + AppSync + DynamoDB vía CloudFormation y genera <code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;">amplify_outputs.json</code></li>
+                                <li style="padding: 0.4rem 0; padding-left: 1.5rem; position: relative;"><span style="position: absolute; left: 0;">2️⃣</span> <strong>Frontend:</strong> <code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;">npm run build</code> compila Next.js (lee el <code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;">amplify_outputs.json</code> generado en el paso anterior)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 7: What students implement -->
+                <div class="step">
+                    <div class="step-number">7</div>
+                    <div class="step-content">
+                        <h3>📝 Lo que el estudiante implementa (TypeScript)</h3>
+                        <p style="color: var(--text-light); margin-bottom: 1rem;">Los siguientes archivos los escribe el estudiante. Aquí se describe <strong>qué</strong> debe hacer cada uno, no el código:</p>
+                        <div class="rendering-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Archivo</th>
+                                        <th>Qué debe hacer</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>amplify/auth/resource.ts</code></td>
+                                        <td>Definir auth con <code>defineAuth</code> — login con email</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>amplify/data/resource.ts</code></td>
+                                        <td>Definir modelo <code>Favorite</code> con <code>pokemonName</code> y autorización <code>owner</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>amplify/backend.ts</code></td>
+                                        <td>Importar auth + data y llamar <code>defineBackend</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>lib/amplify-config.ts</code></td>
+                                        <td>Llamar <code>Amplify.configure(outputs, { ssr: true })</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>components/AmplifyProvider.tsx</code></td>
+                                        <td>Importar config + envolver children con <code>Authenticator.Provider</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>app/layout.tsx</code></td>
+                                        <td>Envolver con <code>AmplifyProvider</code> + importar estilos de <code>@aws-amplify/ui-react/styles.css</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>app/login/page.tsx</code></td>
+                                        <td>Usar <code>&lt;Authenticator&gt;</code> + redirect al home cuando hay user</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>components/Navbar.tsx</code></td>
+                                        <td>Agregar <code>useAuthenticator</code> para mostrar Sign in / Sign out</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>lib/patterns/FavoritesStore.ts</code></td>
+                                        <td>Agregar <code>setAuthenticated</code>, <code>loadFromDb</code>, sync con DynamoDB en <code>toggle</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>lib/FavoritesContext.tsx</code></td>
+                                        <td>Agregar <code>getCurrentUser</code> + <code>Hub.listen("auth")</code> para sync estado de auth</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 8: Run locally -->
+                <div class="step">
+                    <div class="step-number">8</div>
+                    <div class="step-content">
+                        <h3>Ejecutar en local</h3>
+                        <pre><code># Despliega Cognito + AppSync + DynamoDB en tu cuenta AWS (modo sandbox)
+npx ampx sandbox
+
+# En otra terminal:
+npm run dev</code></pre>
+                        <p style="color: var(--text-light); margin-top: 1rem;"><code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;">npx ampx sandbox</code> crea los recursos en la nube y actualiza <code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;">amplify_outputs.json</code> con la configuración real. La app funciona sin backend (favoritos solo en localStorage), pero para login y persistencia en BD es necesario.</p>
+                    </div>
+                </div>
+
+                <!-- Step 9: Common errors -->
+                <div class="step">
+                    <div class="step-number">9</div>
+                    <div class="step-content">
+                        <h3>🧪 Errores Comunes y Soluciones</h3>
+                        <div class="rendering-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Error</th>
+                                        <th>Causa</th>
+                                        <th>Solución</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>npm ci</code> falla</td>
+                                        <td><code>package-lock.json</code> no está sincronizado</td>
+                                        <td><code>npm install</code> → commit <code>package-lock.json</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Cannot find module 'amplify/auth/resource'</code></td>
+                                        <td>Falta <code>amplify/package.json</code> con <code>"type": "module"</code></td>
+                                        <td>Crear el archivo (paso 5)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>ssm:GetParameter denied</code></td>
+                                        <td>El rol IAM no tiene acceso a <code>/cdk-bootstrap/*</code></td>
+                                        <td>Agregar permiso SSM para <code>arn:aws:ssm:*:*:parameter/cdk-bootstrap/*</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>iam:PassRole denied</code></td>
+                                        <td>El rol no puede pasar roles a Lambda/AppSync</td>
+                                        <td>Agregar <code>iam:PassRole</code> para <code>role/amplify-*</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>CDKAssetPublishError</code></td>
+                                        <td>CDK no está bootstrapped o falta acceso S3</td>
+                                        <td>Ejecutar <code>npx cdk bootstrap</code> + agregar acceso S3 a <code>cdk-hnb659fds-assets-*</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Amplify Backend not found</code></td>
+                                        <td>No existe <code>amplify/backend.ts</code></td>
+                                        <td>Verificar que el archivo existe y exporta <code>defineBackend</code></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 10: Key concepts -->
+                <div class="step">
+                    <div class="step-number">10</div>
+                    <div class="step-content">
+                        <h3>🧠 Conceptos Clave para la Clase</h3>
+                        <div class="info-box">
+                            <ul style="list-style: none; padding-left: 0;">
+                                <li style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative;"><span style="position: absolute; left: 0;">🏗️</span> <strong>Amplify Gen 2 = CDK bajo el capó</strong> — define infraestructura como código TypeScript</li>
+                                <li style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative;"><span style="position: absolute; left: 0;">📦</span> <strong>Deploy = CloudFormation stack</strong> — cada push crea/actualiza un stack</li>
+                                <li style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative;"><span style="position: absolute; left: 0;">💾</span> <strong>Assets = S3</strong> — código Lambda y templates se suben al bucket de CDK</li>
+                                <li style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative;"><span style="position: absolute; left: 0;">🔐</span> <strong>Permisos = mayor fuente de errores</strong> — IAM es lo que más falla en deploys</li>
+                                <li style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative;"><span style="position: absolute; left: 0;">👤</span> <strong>allow.owner()</strong> — cada registro tiene un owner automático, aislamiento por usuario</li>
+                                <li style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative;"><span style="position: absolute; left: 0;">⚡</span> <strong>UI Optimista</strong> — la UI se actualiza antes de que la BD confirme, mejor UX</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 11: Teaching setup -->
+                <div class="step">
+                    <div class="step-number">11</div>
+                    <div class="step-content">
+                        <h3>🎯 Setup Recomendado para la Clase</h3>
+                        <div class="info-box">
+                            <h3>Lo que hace el profesor antes de la clase:</h3>
+                            <ul style="list-style: none; padding-left: 0;">
+                                <li style="padding: 0.4rem 0; padding-left: 1.5rem; position: relative;"><span style="position: absolute; left: 0;">✅</span> Bootstrap CDK en la cuenta (<code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;">npx cdk bootstrap</code>)</li>
+                                <li style="padding: 0.4rem 0; padding-left: 1.5rem; position: relative;"><span style="position: absolute; left: 0;">✅</span> Crear el rol IAM con la política de arriba</li>
+                                <li style="padding: 0.4rem 0; padding-left: 1.5rem; position: relative;"><span style="position: absolute; left: 0;">✅</span> Asignar el rol a la app de Amplify Hosting</li>
+                            </ul>
+                        </div>
+                        <div class="info-box" style="margin-top: 1rem;">
+                            <h3>Lo que hace el estudiante en clase:</h3>
+                            <ul style="list-style: none; padding-left: 0;">
+                                <li style="padding: 0.4rem 0; padding-left: 1.5rem; position: relative;"><span style="position: absolute; left: 0;">📝</span> Implementa los archivos TypeScript (paso 7)</li>
+                                <li style="padding: 0.4rem 0; padding-left: 1.5rem; position: relative;"><span style="position: absolute; left: 0;">📝</span> Crea <code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;">amplify/package.json</code> y <code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;">amplify.yml</code></li>
+                                <li style="padding: 0.4rem 0; padding-left: 1.5rem; position: relative;"><span style="position: absolute; left: 0;">🚀</span> Push a GitHub → Amplify Hosting despliega automáticamente</li>
+                            </ul>
+                        </div>
+                        <div class="alert alert-success" style="margin-top: 1.5rem;">
+                            <strong>🏁 Resultado Final:</strong> ✔️ Backend desplegado · ✔️ Frontend compilado · ✔️ Login funcional · ✔️ Favoritos persistidos en DynamoDB · ✔️ Sin errores de IAM/CDK
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
     <!-- Exercises Section -->
     <section id="exercises" class="section section-alt">
         <div class="container">
@@ -786,6 +1250,7 @@ export default nextConfig;</code></pre>
                 <a href="https://www.typescriptlang.org/" target="_blank">TypeScript</a>
                 <a href="https://pokeapi.co/" target="_blank">PokéAPI</a>
                 <a href="https://nextjs.org/" target="_blank">Next.js</a>
+                <a href="https://docs.amplify.aws/" target="_blank">AWS Amplify</a>
             </div>
         </div>
     </footer>

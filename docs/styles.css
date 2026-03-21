@@ -327,6 +327,12 @@ code {
     border-left: 4px solid var(--success);
 }
 
+.alert-warning {
+    background: #fef3c7;
+    color: #92400e;
+    border-left: 4px solid #f59e0b;
+}
+
 /* Pattern Cards */
 .pattern-category {
     margin-bottom: 4rem;
@@ -527,7 +533,8 @@ code {
 }
 
 /* Next.js section */
-.nextjs-steps {
+.nextjs-steps,
+.amplify-steps {
     display: flex;
     flex-direction: column;
     gap: 2rem;
